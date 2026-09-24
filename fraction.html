@@ -81,11 +81,39 @@
       <div class="loot-card"><span class="loot-icon">⚖️</span><strong>Equivalent fractions</strong><span>Different look, same value</span></div>
     </section>
 
+
+    <section class="inventory-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Treasure bag</p>
+          <h2>Your loot</h2>
+        </div>
+        <span id="fractionInventoryCount" class="inventory-count">0 items</span>
+      </div>
+      <div id="fractionLootInventory" class="inventory-grid">
+        <div class="empty-inventory">Beat a region to earn your first item.</div>
+      </div>
+    </section>
+
     <section class="parent-note">
       <h2>How progression works</h2>
       <p>Fraction Quest starts with halves, then adds quarters, thirds, equivalent fractions, and mixed fifths. Wrong answers never remove XP; they make that concept appear more often in later practice.</p>
     </section>
   </main>
+
+
+  <div id="fractionLootDrop" class="loot-drop hidden" role="dialog" aria-modal="true" aria-labelledby="fractionLootDropTitle">
+    <div class="loot-drop-card">
+      <div class="loot-rays" aria-hidden="true"></div>
+      <p class="eyebrow">Region complete</p>
+      <div id="fractionLootDropIcon" class="loot-drop-icon">🪄</div>
+      <h2 id="fractionLootDropTitle">Loot found!</h2>
+      <h3 id="fractionLootDropName">Halfmoon Charm</h3>
+      <p id="fractionLootDropDescription">A trophy from your adventure.</p>
+      <button id="fractionLootContinue" class="loot-continue" type="button">Take loot & continue →</button>
+    </div>
+  </div>
+
 
   <script src="fraction.js"></script>
 </body>
