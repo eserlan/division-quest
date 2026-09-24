@@ -3,12 +3,12 @@ const fractionZones = [
     name: "Forest of Halves",
     icon: "🌲",
     rank: "Apprentice",
-    goal: 6,
+    goal: 10,
     enemy: "Fraction Slime",
     emoji: "👾",
-    skill: "Learn what 1/2 means",
+    skill: "Learn what one half means in different ways",
     fractions: [[1, 2]],
-    types: ["picture", "group"]
+    types: ["picture", "circle", "group", "halfOf", "share", "chooseHalf"]
   },
   {
     name: "Quarter Cavern",
@@ -107,6 +107,10 @@ function pick(items) {
   return items[randomInt(0, items.length - 1)];
 }
 
+function shuffle(items) {
+  return [...items].sort(() => Math.random() - 0.5);
+}
+
 function fractionText(fraction) {
   return fraction[0] + "/" + fraction[1];
 }
@@ -129,6 +133,42 @@ function chooseFraction(zone) {
   return pick(bag);
 }
 
+function buildProblemDetails(fraction, type) {
+  const details = { fraction, type };
+
+  if (type === "group") {
+    const multiplier = state.zone === 0 ? pick([2, 3, 4, 5]) : 3;
+    details.groupTotal = fraction[1] * multiplier;
+    details.groupSelected = fraction[0] * multiplier;
+  }
+
+  if (type === "halfOf") {
+    details.total = pick([4, 6, 8, 10, 12]);
+    details.item = pick(["⭐", "🪙", "🍎", "⚔️"]);
+  }
+
+  if (type === "share") {
+    details.total = pick([4, 6, 8, 10, 12]);
+  }
+
+  if (type === "circle") {
+    details.theme = pick(["pizza", "shield", "moon"]);
+  }
+
+  if (type === "chooseHalf") {
+    const choices = shuffle([
+      { label: "A", fraction: [1, 2] },
+      { label: "B", fraction: [1, 3] },
+      { label: "C", fraction: [2, 3] },
+      { label: "D", fraction: [1, 4] }
+    ]);
+    details.visualChoices = choices;
+    details.correctLabel = choices.find((choice) => fractionValue(choice.fraction) === 0.5).label;
+  }
+
+  return details;
+}
+
 function newFractionProblem() {
   state.locked = false;
   const zone = fractionZones[state.zone];
@@ -138,7 +178,7 @@ function newFractionProblem() {
   let key = problemKey(fraction, type);
   let guard = 0;
 
-  while (state.recent.includes(key) && guard < 10) {
+  while (state.recent.includes(key) && guard < 12) {
     fraction = chooseFraction(zone);
     type = pick(zone.types);
     key = problemKey(fraction, type);
@@ -148,7 +188,7 @@ function newFractionProblem() {
   state.recent.push(key);
   if (state.recent.length > 4) state.recent.shift();
 
-  state.current = { fraction, type };
+  state.current = buildProblemDetails(fraction, type);
   renderProblem();
   renderFractionAnswers();
   els.feedback.textContent = "Choose the answer that matches the challenge.";
@@ -156,7 +196,8 @@ function newFractionProblem() {
 }
 
 function renderProblem() {
-  const { fraction, type } = state.current;
+  const current = state.current;
+  const { fraction, type } = current;
   els.visual.innerHTML = "";
 
   if (type === "picture") {
@@ -165,9 +206,38 @@ function renderProblem() {
     return;
   }
 
+  if (type === "circle") {
+    const names = {
+      pizza: "pizza",
+      shield: "shield",
+      moon: "moon"
+    };
+    els.prompt.textContent = "What fraction of the " + names[current.theme] + " is highlighted?";
+    renderHalfCircle(current.theme);
+    return;
+  }
+
   if (type === "group") {
-    els.prompt.textContent = "How many gems are " + fractionText(fraction) + " of the treasure?";
-    renderGemGroup(fraction);
+    els.prompt.textContent = "What fraction of these treasures is highlighted?";
+    renderGemGroup(current.groupTotal, current.groupSelected);
+    return;
+  }
+
+  if (type === "halfOf") {
+    els.prompt.textContent = "What is half of " + current.total + "?";
+    renderHalfOfPile(current.total, current.item);
+    return;
+  }
+
+  if (type === "share") {
+    els.prompt.textContent = "Two adventurers share " + current.total + " gems equally. How many does each get?";
+    renderSharingScene(current.total);
+    return;
+  }
+
+  if (type === "chooseHalf") {
+    els.prompt.textContent = "Which picture shows one half?";
+    renderChooseHalf(current.visualChoices);
     return;
   }
 
@@ -189,9 +259,23 @@ function renderFractionBar(fraction) {
   els.visual.appendChild(bar);
 }
 
-function renderGemGroup(fraction) {
-  const total = fraction[1] * 3;
-  const selected = fraction[0] * 3;
+function renderHalfCircle(theme) {
+  const wrap = document.createElement("div");
+  wrap.className = "circle-challenge";
+
+  const circle = document.createElement("div");
+  circle.className = "fraction-circle " + theme;
+
+  const icon = document.createElement("span");
+  icon.className = "circle-icon";
+  icon.textContent = theme === "pizza" ? "🍕" : theme === "shield" ? "🛡️" : "🌙";
+  circle.appendChild(icon);
+
+  wrap.appendChild(circle);
+  els.visual.appendChild(wrap);
+}
+
+function renderGemGroup(total, selected) {
   const field = document.createElement("div");
   field.className = "gem-field";
 
@@ -205,6 +289,54 @@ function renderGemGroup(fraction) {
   els.visual.appendChild(field);
 }
 
+function renderHalfOfPile(total, item) {
+  const wrap = document.createElement("div");
+  wrap.className = "half-of-pile";
+  for (let i = 0; i < total; i += 1) {
+    const token = document.createElement("span");
+    token.textContent = item;
+    wrap.appendChild(token);
+  }
+  els.visual.appendChild(wrap);
+}
+
+function renderSharingScene(total) {
+  const wrap = document.createElement("div");
+  wrap.className = "sharing-scene";
+  wrap.innerHTML =
+    '<div class="share-player"><span>🧙</span><small>?</small></div>' +
+    '<div class="share-pile"><div>' + "💎".repeat(total) + '</div><strong>' + total + ' gems</strong></div>' +
+    '<div class="share-player"><span>🧝</span><small>?</small></div>';
+  els.visual.appendChild(wrap);
+}
+
+function renderChooseHalf(choices) {
+  const grid = document.createElement("div");
+  grid.className = "choice-visual-grid";
+
+  choices.forEach((choice) => {
+    const card = document.createElement("div");
+    card.className = "mini-fraction-card";
+
+    const label = document.createElement("strong");
+    label.textContent = choice.label;
+
+    const bar = document.createElement("div");
+    bar.className = "mini-bar";
+
+    for (let i = 0; i < choice.fraction[1]; i += 1) {
+      const part = document.createElement("span");
+      part.className = i < choice.fraction[0] ? "mini-piece filled" : "mini-piece";
+      bar.appendChild(part);
+    }
+
+    card.append(label, bar);
+    grid.appendChild(card);
+  });
+
+  els.visual.appendChild(grid);
+}
+
 function renderEquivalentDisplay(fraction) {
   const wrap = document.createElement("div");
   wrap.className = "equivalent-display";
@@ -215,19 +347,45 @@ function renderEquivalentDisplay(fraction) {
   els.visual.appendChild(wrap);
 }
 
+function numericOptions(correct) {
+  const values = new Set([correct]);
+  const nearby = [correct - 2, correct - 1, correct + 1, correct + 2, correct + 3];
+  nearby.forEach((value) => {
+    if (value > 0 && values.size < 4) values.add(value);
+  });
+  while (values.size < 4) values.add(randomInt(1, Math.max(6, correct + 3)));
+  return shuffle([...values]);
+}
+
 function renderFractionAnswers() {
-  const { fraction, type } = state.current;
+  const current = state.current;
+  const { fraction, type } = current;
   let options = [];
 
-  if (type === "group") {
-    const correct = fraction[0] * 3;
-    options = [correct, Math.max(1, correct - 1), correct + 1, correct + 2];
+  if (type === "halfOf" || type === "share") {
+    options = numericOptions(current.total / 2);
+  } else if (type === "chooseHalf") {
+    options = shuffle(current.visualChoices.map((choice) => choice.label));
+  } else if (type === "group") {
+    const candidates = [
+      fractionText(fraction),
+      "1/3",
+      "2/3",
+      "1/4"
+    ];
+    options = shuffle([...new Set(candidates)]);
+    while (options.length < 4) {
+      const denominatorOption = randomInt(2, 6);
+      const numeratorOption = randomInt(1, denominatorOption);
+      options.push(numeratorOption + "/" + denominatorOption);
+      options = [...new Set(options)];
+    }
   } else if (type === "equivalent") {
     const correct = [fraction[0] * 2, fraction[1] * 2];
     const wrongA = [Math.max(1, fraction[0]), fraction[1] + 1];
     const wrongB = [Math.min(fraction[1], fraction[0] + 1), fraction[1]];
     const wrongC = [1, Math.max(2, fraction[1] + 2)];
-    options = [fractionText(correct), fractionText(wrongA), fractionText(wrongB), fractionText(wrongC)];
+    options = shuffle([fractionText(correct), fractionText(wrongA), fractionText(wrongB), fractionText(wrongC)]);
   } else {
     const denominator = fraction[1];
     const candidates = [
@@ -243,9 +401,9 @@ function renderFractionAnswers() {
       options.push(numeratorOption + "/" + denominatorOption);
       options = [...new Set(options)];
     }
+    options = shuffle(options);
   }
 
-  options.sort(() => Math.random() - 0.5);
   els.answers.innerHTML = "";
 
   options.slice(0, 4).forEach((value) => {
@@ -259,10 +417,19 @@ function renderFractionAnswers() {
 }
 
 function isFractionAnswerCorrect(value) {
-  const { fraction, type } = state.current;
+  const current = state.current;
+  const { fraction, type } = current;
+
+  if (type === "halfOf" || type === "share") {
+    return Number(value) === current.total / 2;
+  }
+
+  if (type === "chooseHalf") {
+    return value === current.correctLabel;
+  }
 
   if (type === "group") {
-    return Number(value) === fraction[0] * 3;
+    return value === fractionText(fraction);
   }
 
   if (type === "equivalent") {
@@ -310,7 +477,7 @@ function checkFractionAnswer(value, button) {
     }
 
     updateFractionUI();
-    window.setTimeout(newFractionProblem, 900);
+    window.setTimeout(newFractionProblem, 1000);
     return;
   }
 
@@ -322,10 +489,23 @@ function checkFractionAnswer(value, button) {
 }
 
 function explanation() {
-  const { fraction, type } = state.current;
+  const current = state.current;
+  const { fraction, type } = current;
+
+  if (type === "halfOf") {
+    return "Half of " + current.total + " is " + (current.total / 2) + ".";
+  }
+
+  if (type === "share") {
+    return current.total + " shared equally between two adventurers gives " + (current.total / 2) + " each.";
+  }
+
+  if (type === "chooseHalf") {
+    return "One half means one of two equal parts.";
+  }
 
   if (type === "group") {
-    return fractionText(fraction) + " of this group is " + (fraction[0] * 3) + " gems.";
+    return current.groupSelected + " of " + current.groupTotal + " items is " + fractionText(fraction) + ".";
   }
 
   if (type === "equivalent") {
@@ -336,10 +516,23 @@ function explanation() {
 }
 
 function hintText() {
-  const { fraction, type } = state.current;
+  const current = state.current;
+  const { type } = current;
+
+  if (type === "halfOf") {
+    return "Split the items into two equal groups.";
+  }
+
+  if (type === "share") {
+    return "Make two equal piles. Each adventurer must get the same number.";
+  }
+
+  if (type === "chooseHalf") {
+    return "Look for a picture split into two equal parts with exactly one part filled.";
+  }
 
   if (type === "group") {
-    return "Count all the gems, then look at how many are highlighted.";
+    return "Count all the treasures, then count the highlighted ones. Is exactly half highlighted?";
   }
 
   if (type === "equivalent") {
