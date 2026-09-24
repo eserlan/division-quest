@@ -88,11 +88,39 @@
       <div class="loot-card"><span class="loot-icon">🎒</span><strong>Next loot</strong><span id="nextLoot">Silver Staff at 50 XP</span></div>
     </section>
 
+
+    <section class="inventory-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Treasure bag</p>
+          <h2>Your loot</h2>
+        </div>
+        <span id="inventoryCount" class="inventory-count">0 items</span>
+      </div>
+      <div id="lootInventory" class="inventory-grid">
+        <div class="empty-inventory">Beat a region to earn your first item.</div>
+      </div>
+    </section>
+
     <section class="parent-note">
       <h2>How progression works</h2>
       <p>The game starts with the easiest divisor families, then unlocks new ones after repeated success. Skills that cause mistakes appear more often, while older skills still return for review.</p>
     </section>
   </main>
+
+
+  <div id="lootDrop" class="loot-drop hidden" role="dialog" aria-modal="true" aria-labelledby="lootDropTitle">
+    <div class="loot-drop-card">
+      <div class="loot-rays" aria-hidden="true"></div>
+      <p class="eyebrow">Region complete</p>
+      <div id="lootDropIcon" class="loot-drop-icon">🗡️</div>
+      <h2 id="lootDropTitle">Loot found!</h2>
+      <h3 id="lootDropName">Slimewood Wand</h3>
+      <p id="lootDropDescription">A trophy from your adventure.</p>
+      <button id="lootContinue" class="loot-continue" type="button">Take loot & continue →</button>
+    </div>
+  </div>
+
 
   <script src="app.js"></script>
 </body>
