@@ -1,3 +1,11 @@
+const divisionLoot = [
+  { icon: "🪄", name: "Slimewood Wand", description: "Carved from the Beginner Woods. Proof that the first division spells are yours." },
+  { icon: "🧤", name: "Goblin Counting Gloves", description: "A pair of lucky gloves from Goblin Camp." },
+  { icon: "🛡️", name: "Keeper's Rune Shield", description: "Recovered from Stone Castle after mastering mixed division." },
+  { icon: "🔮", name: "Mimic's Number Orb", description: "A strange orb from the Shadow Cave that glows around tricky numbers." },
+  { icon: "🐉", name: "Dragon Division Crown", description: "The final trophy of Division Quest. Worn by a true Division Master." }
+];
+
 const zones = [
   { name: "Beginner Woods", icon: "🌲", divs: [2, 5, 10], goal: 8, monster: "Number Slime", emoji: "👾", rank: "Rookie", skill: "Master ÷2, ÷5 and ÷10" },
   { name: "Goblin Camp", icon: "⛺", divs: [2, 3, 4, 5, 10], goal: 10, monster: "Counting Goblin", emoji: "👺", rank: "Scout", skill: "Add ÷3 and ÷4" },
@@ -33,7 +41,14 @@ const els = {
   showGroups: $("showGroups"),
   hintButton: $("hintButton"),
   newProblemButton: $("newProblemButton"),
-  resetGame: $("resetGame")
+  resetGame: $("resetGame"),
+  inventory: $("lootInventory"),
+  inventoryCount: $("inventoryCount"),
+  lootDrop: $("lootDrop"),
+  lootDropIcon: $("lootDropIcon"),
+  lootDropName: $("lootDropName"),
+  lootDropDescription: $("lootDropDescription"),
+  lootContinue: $("lootContinue")
 };
 
 let state = freshState();
@@ -53,7 +68,10 @@ function freshState() {
     locked: false,
     weak: {},
     groupsShown: false,
-    recent: []
+    recent: [],
+    inventory: [],
+    claimedZones: [],
+    lootPending: false
   };
 }
 
@@ -162,18 +180,25 @@ function checkAnswer(value, button) {
       state.coins += 15;
       els.feedback.textContent = "🏆 Monster defeated! +30 XP and 15 coins!";
 
-      if (state.mastery >= zones[state.zone].goal && state.zone < zones.length - 1) {
-        state.zone += 1;
-        state.mastery = 0;
-        state.maxHp = Math.min(4 + state.zone, 8);
-        els.feedback.textContent = `🗺️ New region unlocked: ${zones[state.zone].name}!`;
+      if (state.mastery >= zones[state.zone].goal) {
+        const completedZone = state.zone;
+        const gotLoot = awardDivisionLoot(completedZone);
+
+        if (completedZone < zones.length - 1) {
+          state.zone += 1;
+          state.mastery = 0;
+          state.maxHp = Math.min(4 + state.zone, 8);
+          els.feedback.textContent = `🗺️ Region complete! ${zones[state.zone].name} unlocked — and loot dropped!`;
+        } else if (gotLoot) {
+          els.feedback.textContent = "🐉 Division Quest complete! Legendary loot dropped!";
+        }
       }
 
       state.hp = state.maxHp;
     }
 
     updateUI();
-    window.setTimeout(newProblem, 850);
+    if (!state.lootPending) window.setTimeout(newProblem, 850);
     return;
   }
 
@@ -182,6 +207,43 @@ function checkAnswer(value, button) {
   button.disabled = true;
   els.feedback.textContent = `🛡️ The spell missed. Try ${state.divisor} × ? = ${state.dividend}. No XP lost.`;
   updateUI();
+}
+
+function awardDivisionLoot(zoneIndex) {
+  if (state.claimedZones.includes(zoneIndex)) return false;
+
+  const item = divisionLoot[zoneIndex];
+  state.claimedZones.push(zoneIndex);
+  state.inventory.push(item);
+  state.lootPending = true;
+  renderInventory();
+
+  els.lootDropIcon.textContent = item.icon;
+  els.lootDropName.textContent = item.name;
+  els.lootDropDescription.textContent = item.description;
+  els.lootDrop.classList.remove("hidden");
+  els.lootContinue.focus();
+  return true;
+}
+
+function renderInventory() {
+  els.inventory.innerHTML = "";
+  els.inventoryCount.textContent = state.inventory.length + (state.inventory.length === 1 ? " item" : " items");
+
+  if (!state.inventory.length) {
+    els.inventory.innerHTML = '<div class="empty-inventory">Beat a region to earn your first item.</div>';
+    return;
+  }
+
+  state.inventory.forEach((item) => {
+    const card = document.createElement("div");
+    card.className = "inventory-item";
+    card.innerHTML =
+      '<div class="inventory-item-icon">' + item.icon + '</div>' +
+      '<strong>' + item.name + '</strong>' +
+      '<small>Region trophy</small>';
+    els.inventory.appendChild(card);
+  });
 }
 
 function animateHit() {
@@ -252,6 +314,13 @@ function renderMap() {
 els.showGroups.addEventListener("click", toggleGroups);
 els.hintButton.addEventListener("click", showHint);
 els.newProblemButton.addEventListener("click", newProblem);
+els.lootContinue.addEventListener("click", () => {
+  state.lootPending = false;
+  els.lootDrop.classList.add("hidden");
+  renderInventory();
+newProblem();
+});
+
 els.resetGame.addEventListener("click", () => {
   state = freshState();
   newProblem();
