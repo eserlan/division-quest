@@ -404,3 +404,135 @@ button:focus-visible {
     transition: none !important;
   }
 }
+
+.inventory-card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: rgba(19,26,44,.88);
+}
+
+.inventory-count {
+  color: var(--muted);
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: .75rem;
+  margin-top: 1rem;
+}
+
+.inventory-item,
+.empty-inventory {
+  min-height: 112px;
+  padding: .85rem;
+  border: 1px solid var(--border);
+  border-radius: .9rem;
+  background: var(--card);
+}
+
+.inventory-item {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: .2rem;
+  text-align: center;
+}
+
+.inventory-item-icon {
+  font-size: 2rem;
+}
+
+.inventory-item small,
+.empty-inventory {
+  color: var(--muted);
+}
+
+.empty-inventory {
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.loot-drop {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(4,8,18,.82);
+  backdrop-filter: blur(7px);
+}
+
+.loot-drop.hidden {
+  display: none;
+}
+
+.loot-drop-card {
+  position: relative;
+  width: min(100%, 430px);
+  overflow: hidden;
+  padding: 1.5rem;
+  border: 2px solid var(--gold);
+  border-radius: 1.4rem;
+  background: var(--panel);
+  box-shadow: 0 24px 80px rgba(0,0,0,.45);
+  text-align: center;
+}
+
+.loot-rays {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  top: -135px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250,204,21,.3), rgba(250,204,21,0) 70%);
+  pointer-events: none;
+}
+
+.loot-drop-icon {
+  position: relative;
+  margin: .7rem 0 .2rem;
+  font-size: 5rem;
+  filter: drop-shadow(0 6px 14px rgba(250,204,21,.25));
+  animation: loot-pop .5s ease;
+}
+
+.loot-drop-card h2 {
+  margin: .2rem 0;
+}
+
+.loot-drop-card h3 {
+  margin: .35rem 0;
+  color: var(--gold);
+  font-size: 1.4rem;
+}
+
+.loot-drop-card p:not(.eyebrow) {
+  color: var(--muted);
+}
+
+.loot-continue {
+  width: 100%;
+  min-height: 50px;
+  margin-top: .7rem;
+  border: 0;
+  border-radius: .9rem;
+  background: var(--gold);
+  color: #181200;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+@keyframes loot-pop {
+  0% { transform: scale(.45) rotate(-10deg); opacity: 0; }
+  70% { transform: scale(1.12) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
