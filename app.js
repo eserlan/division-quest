@@ -175,26 +175,29 @@ function checkAnswer(value, button) {
     animateHit();
     els.feedback.textContent = `⚔️ Direct hit! ${state.divisor} × ${state.answer} = ${state.dividend}. +${gain} XP`;
 
-    if (state.hp <= 0) {
+    const completedZone = state.mastery >= zones[state.zone].goal && !state.claimedZones.includes(state.zone);
+
+    if (completedZone) {
+      const completedZoneIndex = state.zone;
       state.xp += 30;
       state.coins += 15;
-      els.feedback.textContent = "🏆 Monster defeated! +30 XP and 15 coins!";
+      awardDivisionLoot(completedZoneIndex);
 
-      if (state.mastery >= zones[state.zone].goal) {
-        const completedZone = state.zone;
-        const gotLoot = awardDivisionLoot(completedZone);
-
-        if (completedZone < zones.length - 1) {
-          state.zone += 1;
-          state.mastery = 0;
-          state.maxHp = Math.min(4 + state.zone, 8);
-          els.feedback.textContent = `🗺️ Region complete! ${zones[state.zone].name} unlocked — and loot dropped!`;
-        } else if (gotLoot) {
-          els.feedback.textContent = "🐉 Division Quest complete! Legendary loot dropped!";
-        }
+      if (completedZoneIndex < zones.length - 1) {
+        state.zone += 1;
+        state.mastery = 0;
+        state.maxHp = Math.min(4 + state.zone, 8);
+        state.hp = state.maxHp;
+        els.feedback.textContent = `🗺️ Region complete! ${zones[state.zone].name} unlocked — and loot dropped!`;
+      } else {
+        state.hp = state.maxHp;
+        els.feedback.textContent = "🐉 Division Quest complete! Legendary loot dropped!";
       }
-
+    } else if (state.hp <= 0) {
+      state.xp += 30;
+      state.coins += 15;
       state.hp = state.maxHp;
+      els.feedback.textContent = "🏆 Monster defeated! +30 XP and 15 coins!";
     }
 
     updateUI();
@@ -292,7 +295,8 @@ function updateUI() {
 
   els.weapon.textContent = state.zone < 2 ? "Wooden Wand" : state.zone < 4 ? "Silver Staff" : "Dragon Wand";
   els.shield.textContent = state.zone < 2 ? "Training Shield" : state.zone < 4 ? "Rune Shield" : "Hero Shield";
-  els.nextLoot.textContent = state.xp < 50 ? "Silver Staff at 50 XP" : state.xp < 150 ? "Rune Shield at 150 XP" : "Dragon Wand at 300 XP";
+  const nextReward = divisionLoot[Math.min(state.zone, divisionLoot.length - 1)];
+  els.nextLoot.textContent = state.claimedZones.includes(state.zone) ? "All region loot claimed" : nextReward.name + " for clearing " + zone.name;
 
   renderMap();
 }
@@ -318,11 +322,12 @@ els.lootContinue.addEventListener("click", () => {
   state.lootPending = false;
   els.lootDrop.classList.add("hidden");
   renderInventory();
-newProblem();
+  newProblem();
 });
 
 els.resetGame.addEventListener("click", () => {
   state = freshState();
+  renderInventory();
   newProblem();
 });
 
