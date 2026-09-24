@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111827" />
+  <title>Fraction Quest</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="fraction.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <a href="index.html" class="eyebrow" style="text-decoration:none">← Math Quest</a>
+        <h1>Explore the world of fractions</h1>
+      </div>
+      <button id="resetFractionGame" class="secondary-button" type="button">Restart quest</button>
+    </header>
+
+    <section class="stats" aria-label="Player stats">
+      <div class="stat-card"><span>Rank</span><strong id="fractionRank">Apprentice</strong></div>
+      <div class="stat-card"><span>XP</span><strong id="fractionXp">0</strong></div>
+      <div class="stat-card"><span>Coins</span><strong id="fractionCoins">0</strong></div>
+      <div class="stat-card"><span>Streak</span><strong id="fractionStreak">0</strong></div>
+    </section>
+
+    <section class="battle-card">
+      <div class="battle-header">
+        <div>
+          <p class="eyebrow" id="fractionZone">Forest of Halves</p>
+          <p id="fractionSkill">Learn what 1/2 means</p>
+        </div>
+        <div class="enemy-meta">
+          <strong id="fractionEnemyName">Fraction Slime</strong>
+          <div id="fractionHearts" class="hearts" aria-label="Enemy health"></div>
+        </div>
+      </div>
+
+      <div class="fraction-scene" aria-label="Fraction battle scene">
+        <div class="fraction-ground"></div>
+        <div id="fractionHero" class="fraction-fighter fraction-hero" aria-label="Player wizard">🧙</div>
+        <div id="fractionOrb" class="fraction-orb" aria-hidden="true">✨🍕✨</div>
+        <div id="fractionMonster" class="fraction-fighter fraction-monster" aria-label="Enemy">👾</div>
+      </div>
+
+      <div class="problem-panel">
+        <p class="eyebrow">Fraction challenge</p>
+        <h2 id="fractionPrompt" class="fraction-prompt">Which fraction matches the picture?</h2>
+
+        <div id="fractionVisual" class="fraction-visual" aria-live="polite"></div>
+
+        <div id="fractionAnswers" class="answers" aria-label="Answer choices"></div>
+
+        <div id="fractionFeedback" class="feedback" aria-live="polite">
+          Choose the answer that matches the picture.
+        </div>
+
+        <div class="problem-actions">
+          <button id="fractionHint" class="secondary-button" type="button">💡 Hint</button>
+          <button id="fractionNewProblem" class="secondary-button" type="button">🎲 New challenge</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="progress-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Fraction world</p>
+          <h2>Master a region to travel onward</h2>
+        </div>
+        <strong id="fractionMasteryLabel">0 / 6</strong>
+      </div>
+      <div class="progress-track"><div id="fractionMasteryBar" class="progress-fill"></div></div>
+      <div id="fractionMap" class="adventure-map" aria-label="Fraction adventure map"></div>
+    </section>
+
+    <section class="loot-grid">
+      <div class="loot-card"><span class="loot-icon">🍕</span><strong>See fractions</strong><span>Parts of a whole</span></div>
+      <div class="loot-card"><span class="loot-icon">💎</span><strong>Find fractions</strong><span>Parts of a group</span></div>
+      <div class="loot-card"><span class="loot-icon">⚖️</span><strong>Equivalent fractions</strong><span>Different look, same value</span></div>
+    </section>
+
+    <section class="parent-note">
+      <h2>How progression works</h2>
+      <p>Fraction Quest starts with halves, then adds quarters, thirds, equivalent fractions, and mixed fifths. Wrong answers never remove XP; they make that concept appear more often in later practice.</p>
+    </section>
+  </main>
+
+  <script src="fraction.js"></script>
+</body>
+</html>
