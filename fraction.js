@@ -477,28 +477,29 @@ function checkFractionAnswer(value, button) {
     animateFractionHit();
     els.feedback.textContent = "⚔️ Direct hit! " + explanation() + " +" + gain + " XP";
 
-    if (state.hp <= 0) {
+    const completedZone = state.mastery >= fractionZones[state.zone].goal && !state.claimedZones.includes(state.zone);
+
+    if (completedZone) {
+      const completedZoneIndex = state.zone;
       state.xp += 25;
       state.coins += 10;
+      awardFractionLoot(completedZoneIndex);
 
-      const zone = fractionZones[state.zone];
-      if (state.mastery >= zone.goal) {
-        const completedZone = state.zone;
-        const gotLoot = awardFractionLoot(completedZone);
-
-        if (completedZone < fractionZones.length - 1) {
-          state.zone += 1;
-          state.mastery = 0;
-          state.maxHp = Math.min(4 + state.zone, 8);
-          els.feedback.textContent = "🗺️ Region complete! " + fractionZones[state.zone].name + " unlocked — and loot dropped!";
-        } else if (gotLoot) {
-          els.feedback.textContent = "🐲 Fraction Quest complete! Legendary loot dropped!";
-        }
+      if (completedZoneIndex < fractionZones.length - 1) {
+        state.zone += 1;
+        state.mastery = 0;
+        state.maxHp = Math.min(4 + state.zone, 8);
+        state.hp = state.maxHp;
+        els.feedback.textContent = "🗺️ Region complete! " + fractionZones[state.zone].name + " unlocked — and loot dropped!";
       } else {
-        els.feedback.textContent = "🏆 Monster defeated! +25 XP and 10 coins!";
+        state.hp = state.maxHp;
+        els.feedback.textContent = "🐲 Fraction Quest complete! Legendary loot dropped!";
       }
-
+    } else if (state.hp <= 0) {
+      state.xp += 25;
+      state.coins += 10;
       state.hp = state.maxHp;
+      els.feedback.textContent = "🏆 Monster defeated! +25 XP and 10 coins!";
     }
 
     updateFractionUI();
@@ -660,11 +661,12 @@ els.lootContinue.addEventListener("click", () => {
   state.lootPending = false;
   els.lootDrop.classList.add("hidden");
   renderFractionInventory();
-newFractionProblem();
+  newFractionProblem();
 });
 
 els.reset.addEventListener("click", () => {
   state = freshFractionState();
+  renderFractionInventory();
   newFractionProblem();
 });
 
