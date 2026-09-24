@@ -1,17 +1,32 @@
-# Division Quest
+# Math Quest
 
-A small browser game that turns division practice into a visual RPG battle.
+A small browser game that turns maths practice into visual RPG adventures.
 
-## What it does
+## Quests
+
+### Division Quest
 
 - Starts with easy divisor families: ÷2, ÷5 and ÷10
 - Unlocks ÷3, ÷4, ÷6, ÷7, ÷8, ÷9, ÷11 and ÷12 over time
-- Uses mastery-based progression instead of a timer
-- Repeats skills that cause mistakes more often
-- Keeps older skills in rotation for review
 - Shows division visually by splitting gems into equal chests
-- Uses enemies, XP, coins, loot and an adventure map as motivation
-- Never removes XP for wrong answers
+- Repeats divisor families that cause mistakes more often
+
+### Fraction Quest
+
+- Starts with halves
+- Adds quarters, thirds, equivalent fractions and fifths over time
+- Uses visual fraction bars and groups of gems
+- Introduces equivalent fractions visually before mixed practice
+- Repeats difficult fraction concepts more often
+
+## Shared learning principles
+
+- Mastery-based progression instead of speed
+- No timers
+- Wrong answers never remove XP
+- Older skills stay in rotation for review
+- XP, coins, enemies and regions provide game progression
+- Practice adapts during the current play session
 
 ## Run locally
 
@@ -27,17 +42,19 @@ python3 -m http.server 8000
 
 Then open http://localhost:8000.
 
-## GitHub Pages
+## Pages
 
-The project is fully static and can be published directly from the `main` branch using GitHub Pages.
+- `index.html` — quest launcher
+- `division.html` — Division Quest
+- `fraction.html` — Fraction Quest
 
-Repository settings → Pages → Deploy from a branch → `main` / root.
+## Main files
 
-## Files
-
-- `index.html` — game UI
-- `styles.css` — visual design and animations
-- `app.js` — game rules, progression and adaptive practice
+- `styles.css` — shared and Division Quest styles
+- `app.js` — Division Quest logic
+- `fraction.css` — Fraction Quest visuals
+- `fraction.js` — Fraction Quest progression and adaptive practice
+- `launcher.css` — launcher layout
 
 ## Next ideas
 
@@ -46,6 +63,6 @@ Repository settings → Pages → Deploy from a branch → `main` / root.
 - Sound effects and music toggle
 - Boss encounters
 - Cosmetic loot shop using earned coins
-- Parent dashboard with mastery by divisor family
-- More visual models for division: groups, arrays and number lines
-- Optional remainders after core division is mastered
+- Parent dashboard showing mastery by skill
+- More visual models: arrays, number lines and circles
+- Optional remainders for Division Quest
