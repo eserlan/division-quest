@@ -1,3 +1,11 @@
+const fractionLoot = [
+  { icon: "🌙", name: "Halfmoon Charm", description: "Awarded for mastering halves in many different forms." },
+  { icon: "🧭", name: "Quartermaster Compass", description: "Its four points mark the way out of Quarter Cavern." },
+  { icon: "💍", name: "Ring of Thirds", description: "A three-marked ring from the Valley of Thirds." },
+  { icon: "⚖️", name: "Mimic's Balance", description: "A relic that remembers that different fractions can be equal." },
+  { icon: "🐲", name: "Fraction Dragon Scale", description: "The legendary final trophy of Fraction Quest." }
+];
+
 const fractionZones = [
   {
     name: "Forest of Halves",
@@ -78,7 +86,14 @@ const els = {
   reset: $("resetFractionGame"),
   masteryLabel: $("fractionMasteryLabel"),
   masteryBar: $("fractionMasteryBar"),
-  map: $("fractionMap")
+  map: $("fractionMap"),
+  inventory: $("fractionLootInventory"),
+  inventoryCount: $("fractionInventoryCount"),
+  lootDrop: $("fractionLootDrop"),
+  lootDropIcon: $("fractionLootDropIcon"),
+  lootDropName: $("fractionLootDropName"),
+  lootDropDescription: $("fractionLootDropDescription"),
+  lootContinue: $("fractionLootContinue")
 };
 
 function freshFractionState() {
@@ -93,7 +108,10 @@ function freshFractionState() {
     locked: false,
     weak: {},
     recent: [],
-    current: null
+    current: null,
+    inventory: [],
+    claimedZones: [],
+    lootPending: false
   };
 }
 
@@ -464,11 +482,18 @@ function checkFractionAnswer(value, button) {
       state.coins += 10;
 
       const zone = fractionZones[state.zone];
-      if (state.mastery >= zone.goal && state.zone < fractionZones.length - 1) {
-        state.zone += 1;
-        state.mastery = 0;
-        state.maxHp = Math.min(4 + state.zone, 8);
-        els.feedback.textContent = "🗺️ New region unlocked: " + fractionZones[state.zone].name + "!";
+      if (state.mastery >= zone.goal) {
+        const completedZone = state.zone;
+        const gotLoot = awardFractionLoot(completedZone);
+
+        if (completedZone < fractionZones.length - 1) {
+          state.zone += 1;
+          state.mastery = 0;
+          state.maxHp = Math.min(4 + state.zone, 8);
+          els.feedback.textContent = "🗺️ Region complete! " + fractionZones[state.zone].name + " unlocked — and loot dropped!";
+        } else if (gotLoot) {
+          els.feedback.textContent = "🐲 Fraction Quest complete! Legendary loot dropped!";
+        }
       } else {
         els.feedback.textContent = "🏆 Monster defeated! +25 XP and 10 coins!";
       }
@@ -477,7 +502,7 @@ function checkFractionAnswer(value, button) {
     }
 
     updateFractionUI();
-    window.setTimeout(newFractionProblem, 1000);
+    if (!state.lootPending) window.setTimeout(newFractionProblem, 1000);
     return;
   }
 
@@ -542,6 +567,43 @@ function hintText() {
   return "Count the total equal parts first, then count the highlighted parts.";
 }
 
+function awardFractionLoot(zoneIndex) {
+  if (state.claimedZones.includes(zoneIndex)) return false;
+
+  const item = fractionLoot[zoneIndex];
+  state.claimedZones.push(zoneIndex);
+  state.inventory.push(item);
+  state.lootPending = true;
+  renderFractionInventory();
+
+  els.lootDropIcon.textContent = item.icon;
+  els.lootDropName.textContent = item.name;
+  els.lootDropDescription.textContent = item.description;
+  els.lootDrop.classList.remove("hidden");
+  els.lootContinue.focus();
+  return true;
+}
+
+function renderFractionInventory() {
+  els.inventory.innerHTML = "";
+  els.inventoryCount.textContent = state.inventory.length + (state.inventory.length === 1 ? " item" : " items");
+
+  if (!state.inventory.length) {
+    els.inventory.innerHTML = '<div class="empty-inventory">Beat a region to earn your first item.</div>';
+    return;
+  }
+
+  state.inventory.forEach((item) => {
+    const card = document.createElement("div");
+    card.className = "inventory-item";
+    card.innerHTML =
+      '<div class="inventory-item-icon">' + item.icon + '</div>' +
+      '<strong>' + item.name + '</strong>' +
+      '<small>Region trophy</small>';
+    els.inventory.appendChild(card);
+  });
+}
+
 function animateFractionHit() {
   els.hero.classList.remove("cast");
   els.monster.classList.remove("hit");
@@ -593,6 +655,13 @@ els.hint.addEventListener("click", () => {
 });
 
 els.newProblem.addEventListener("click", newFractionProblem);
+
+els.lootContinue.addEventListener("click", () => {
+  state.lootPending = false;
+  els.lootDrop.classList.add("hidden");
+  renderFractionInventory();
+newFractionProblem();
+});
 
 els.reset.addEventListener("click", () => {
   state = freshFractionState();
