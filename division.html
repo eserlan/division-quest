@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111827" />
+  <title>Division Quest</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <a href="index.html" class="eyebrow" style="text-decoration:none">← Math Quest</a>
+        <h1>Defeat monsters with division</h1>
+      </div>
+      <button id="resetGame" class="secondary-button" type="button">Restart quest</button>
+    </header>
+
+    <section class="stats" aria-label="Player stats">
+      <div class="stat-card"><span>Rank</span><strong id="rank">Rookie</strong></div>
+      <div class="stat-card"><span>XP</span><strong id="xp">0</strong></div>
+      <div class="stat-card"><span>Coins</span><strong id="coins">0</strong></div>
+      <div class="stat-card"><span>Streak</span><strong id="streak">0</strong></div>
+    </section>
+
+    <section class="battle-card">
+      <div class="battle-header">
+        <div>
+          <p class="eyebrow" id="zoneName">Beginner Woods</p>
+          <p id="zoneGoal">Master ÷2, ÷5 and ÷10</p>
+        </div>
+        <div class="enemy-meta">
+          <strong id="enemyName">Number Slime</strong>
+          <div id="enemyHearts" class="hearts" aria-label="Enemy health"></div>
+        </div>
+      </div>
+
+      <div class="battle-scene" aria-label="Battle scene">
+        <div class="sky-glow"></div>
+        <div class="ground"></div>
+        <div id="hero" class="fighter hero" aria-label="Player wizard">🧙</div>
+        <div id="spellOrb" class="spell-orb" aria-hidden="true">✨➗✨</div>
+        <div id="monster" class="fighter monster" aria-label="Enemy">👾</div>
+      </div>
+
+      <div class="problem-panel">
+        <p class="eyebrow">Cast the correct spell</p>
+        <div id="question" class="question">20 ÷ 5 = ?</div>
+
+        <div class="visual-math">
+          <div class="visual-copy">
+            <strong>Split the loot</strong>
+            <span id="visualLabel">20 gems shared between 5 chests</span>
+          </div>
+          <button id="showGroups" class="secondary-button" type="button">Show groups</button>
+          <div id="groups" class="groups" aria-live="polite"></div>
+        </div>
+
+        <div id="answers" class="answers" aria-label="Answer choices"></div>
+
+        <div id="feedback" class="feedback" aria-live="polite">
+          Choose a rune to cast your spell.
+        </div>
+
+        <div class="problem-actions">
+          <button id="hintButton" class="secondary-button" type="button">💡 Hint</button>
+          <button id="newProblemButton" class="secondary-button" type="button">🎲 New challenge</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="progress-card">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Adventure map</p>
+          <h2>Master a region to travel onward</h2>
+        </div>
+        <strong id="masteryLabel">0 / 8</strong>
+      </div>
+      <div class="progress-track"><div id="masteryBar" class="progress-fill"></div></div>
+      <div id="adventureMap" class="adventure-map" aria-label="Adventure map"></div>
+    </section>
+
+    <section class="loot-grid">
+      <div class="loot-card"><span class="loot-icon">⚔️</span><strong>Weapon</strong><span id="weapon">Wooden Wand</span></div>
+      <div class="loot-card"><span class="loot-icon">🛡️</span><strong>Shield</strong><span id="shield">Training Shield</span></div>
+      <div class="loot-card"><span class="loot-icon">🎒</span><strong>Next loot</strong><span id="nextLoot">Silver Staff at 50 XP</span></div>
+    </section>
+
+    <section class="parent-note">
+      <h2>How progression works</h2>
+      <p>The game starts with the easiest divisor families, then unlocks new ones after repeated success. Skills that cause mistakes appear more often, while older skills still return for review.</p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
