@@ -1,0 +1,165 @@
+.fraction-scene {
+  position: relative;
+  min-height: 270px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #17213c 0%, #29385f 62%, #312f4d 62%, #201f34 100%);
+}
+
+.fraction-ground {
+  position: absolute;
+  inset: auto 0 0;
+  height: 38%;
+  background:
+    linear-gradient(rgba(255,255,255,.025), rgba(0,0,0,.15)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 20px, transparent 20px 40px);
+}
+
+.fraction-fighter {
+  position: absolute;
+  bottom: 16%;
+  font-size: clamp(5rem, 13vw, 8rem);
+  filter: drop-shadow(0 12px 8px rgba(0,0,0,.25));
+  user-select: none;
+}
+
+.fraction-hero { left: 7%; }
+.fraction-monster { right: 7%; }
+
+.fraction-orb {
+  position: absolute;
+  left: 28%;
+  right: 28%;
+  top: 44%;
+  text-align: center;
+  font-size: 2rem;
+  opacity: 0;
+}
+
+.fraction-hero.cast { animation: fraction-cast .45s ease; }
+.fraction-monster.hit { animation: fraction-hit .38s ease; }
+.fraction-orb.go { animation: fraction-orb .6s ease; }
+
+@keyframes fraction-cast {
+  50% { transform: translateY(-12px) scale(1.06); }
+}
+
+@keyframes fraction-hit {
+  25% { transform: translateX(-12px) rotate(-5deg); }
+  65% { transform: translateX(8px) rotate(4deg); }
+}
+
+@keyframes fraction-orb {
+  0% { opacity: 0; transform: translateX(-90px) scale(.6); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(110px) scale(1.25); }
+}
+
+.fraction-prompt {
+  margin: .3rem 0 .6rem;
+  text-align: center;
+  font-size: clamp(1.45rem, 5vw, 2rem);
+}
+
+.fraction-visual {
+  display: flex;
+  min-height: 180px;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--card);
+}
+
+.fraction-bar {
+  display: flex;
+  width: min(100%, 440px);
+  height: 110px;
+  overflow: hidden;
+  border: 4px solid var(--border);
+  border-radius: 1rem;
+  background: #111827;
+}
+
+.fraction-piece {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  border-right: 2px solid var(--border);
+  font-size: 1.7rem;
+}
+
+.fraction-piece:last-child { border-right: 0; }
+
+.fraction-piece.filled {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(255,255,255,.18), transparent 45%),
+    #367d62;
+}
+
+.gem-field {
+  display: flex;
+  max-width: 480px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .5rem;
+}
+
+.fraction-gem {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: .8rem;
+  background: #111827;
+  font-size: 1.8rem;
+}
+
+.fraction-gem.selected {
+  border-color: #86efac;
+  background: #265744;
+}
+
+.equivalent-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.big-fraction {
+  min-width: 110px;
+  padding: .8rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 1rem;
+  font-size: 2.2rem;
+  font-weight: 900;
+}
+
+.equal-symbol {
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.answer-button.fraction-answer {
+  font-size: 1.45rem;
+}
+
+@media (max-width: 640px) {
+  .fraction-scene { min-height: 220px; }
+  .fraction-hero { left: 4%; }
+  .fraction-monster { right: 4%; }
+  .fraction-bar { height: 90px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fraction-hero.cast,
+  .fraction-monster.hit,
+  .fraction-orb.go {
+    animation: none !important;
+  }
+}
